@@ -411,10 +411,10 @@
         <section class="chat-panel">
             <div class="chat-window" id="chatWindow">
                 <svg class="attn-svg" id="attnSvg" width="0" height="0"></svg>
-                <p class="chat-empty" id="chatEmpty">
+                <!--<p class="chat-empty" id="chatEmpty">
                     Schreib eine Nachricht, um den Chat zu starten. Jedes Wort wird in Tokens zerlegt und eingefärbt.
                     Klick auf ein Token, um zu sehen, worauf es „achtet“.
-                </p>
+                </p>-->
             </div>
 
             <!--<div class="hint-bar">
@@ -672,7 +672,7 @@
         const emptyMsg = document.createElement('p');
         emptyMsg.className = 'chat-empty';
         emptyMsg.id = 'chatEmpty';
-        emptyMsg.textContent = 'Schreib eine Nachricht, um den Chat zu starten.';
+        emptyMsg.textContent = 'Schreib eine Nachricht, um den Chat zu starten. Jedes Wort wird in Tokens zerlegt und eingefärbt. Klick auf ein Token, um zu sehen, worauf es „achtet“.';
         chatWindow.appendChild(emptyMsg);
         updateDisplay(0, 0, 0);
     }
