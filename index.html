@@ -2,14 +2,14 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Was ein Chat kostet — Tokens, Attention & Ressourcen</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         /* ---------- Grundvariablen ---------- */
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         :root {
             --ink: #1E2128;
             --panel: #262A33;
@@ -27,17 +27,26 @@
             --sans: 'IBM Plex Sans', system-ui, sans-serif;
             --display: 'Space Grotesk', system-ui, sans-serif;
             --mono: 'IBM Plex Mono', ui-monospace, monospace;
+            --vh: 1vh; /* wird per JS auf die tatsächliche sichtbare Höhe gesetzt (mobile Adressleisten-Fix) */
         }
-        html, body { height: 100%; margin: 0; }
+        html, body { height: 100%; margin: 0; overflow: hidden; }
         body {
             font-family: var(--sans);
             background: var(--ink);
             color: var(--text-dark);
             -webkit-font-smoothing: antialiased;
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+            overscroll-behavior-y: none;
         }
 
         /* ---------- App-Layout ---------- */
-        .app { display: flex; flex-direction: column; height: 100vh; }
+        .app {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            height: calc(var(--vh, 1vh) * 100);
+        }
 
         /* ---------- Kopfbereich ---------- */
         .app-header {
@@ -49,6 +58,7 @@
             background: var(--ink);
             border-bottom: 1px solid var(--panel-line);
             flex-wrap: wrap;
+            flex-shrink: 0;
         }
         .app-header .title-group { flex: 1; min-width: 200px; }
         .app-header h1 {
@@ -77,8 +87,10 @@
             color: var(--text-muted);
             border: 1px solid var(--panel-line);
             border-radius: 3px;
-            padding: 6px 10px;
+            padding: 8px 12px;
             cursor: pointer;
+            min-height: 36px;
+            touch-action: manipulation;
         }
         .app-header .controls button#resetBtn:hover {
             border-color: var(--text-muted);
@@ -93,7 +105,7 @@
             min-height: 0;
         }
         @media (max-width: 860px) {
-            .layout { grid-template-columns: 1fr; grid-template-rows: 1fr auto; }
+            .layout { grid-template-columns: 1fr; grid-template-rows: 1fr auto; min-height: 0; }
         }
 
         /* ---------- Chat-Bereich ---------- */
@@ -106,6 +118,8 @@
         .chat-window {
             flex: 1;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
             padding: 24px 28px;
             position: relative;
         }
@@ -156,9 +170,11 @@
         /* Tokens */
         .tok {
             border-radius: 3px;
-            padding: 0 1px;
+            padding: 2px 1px;
             cursor: pointer;
             transition: filter 0.12s ease;
+            touch-action: manipulation;
+            display: inline-block;
         }
         .tok:hover, .tok.tok-active {
             filter: brightness(0.85);
@@ -180,6 +196,8 @@
             border-top: 1px solid var(--paper-line);
             background: var(--paper);
             padding: 10px 20px 14px;
+            padding-bottom: calc(14px + env(safe-area-inset-bottom));
+            flex-shrink: 0;
         }
         .chat-input-row {
             display: flex;
@@ -209,6 +227,8 @@
             border-radius: 8px;
             padding: 0 20px;
             cursor: pointer;
+            touch-action: manipulation;
+            min-height: 42px;
         }
         .chat-input-row button:disabled { opacity: 0.4; cursor: default; }
         .chat-input-row button:not(:disabled):hover { background: #333844; }
@@ -225,6 +245,7 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            flex-wrap: wrap;
         }
         .control-bar .model-selector label {
             font-family: var(--sans);
@@ -239,8 +260,9 @@
             color: var(--text-dark);
             border: 1px solid var(--paper-line);
             border-radius: 6px;
-            padding: 4px 10px;
+            padding: 6px 10px;
             cursor: pointer;
+            min-height: 34px;
         }
         .control-bar .model-selector select:focus {
             outline: 2px solid #B9B29B;
@@ -269,8 +291,11 @@
             background: var(--panel);
             color: var(--text-light);
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
             padding: 18px 20px 40px;
             border-left: 1px solid var(--panel-line);
+            display: flex;
+            flex-direction: column;
         }
         .panel-section {
             border-bottom: 1px solid var(--panel-line);
@@ -389,6 +414,48 @@
         .source-section a:hover {
             color: var(--text-light);
             border-bottom-color: var(--text-light);
+        }
+
+        /* ================================================================
+           MOBILE / SMARTPHONE ANPASSUNGEN
+           ================================================================ */
+        @media (max-width: 860px) {
+            .app-header {
+                padding: 10px 14px;
+                gap: 8px;
+            }
+            .app-header h1 { font-size: 1rem; }
+            .app-header p { font-size: 0.72rem; }
+
+            .chat-window { padding: 14px 14px 18px; }
+            .bubble { max-width: 94%; font-size: 0.88rem; padding: 10px 12px; }
+
+            .chat-input-area { padding: 8px 12px; padding-bottom: calc(10px + env(safe-area-inset-bottom)); }
+            /* 16px verhindert automatisches Hineinzoomen bei Fokus auf iOS */
+            .chat-input-row textarea { font-size: 16px; }
+            .chat-input-row button { padding: 0 16px; font-size: 0.9rem; }
+
+            .control-bar { gap: 8px; }
+            .control-bar .model-selector { width: 100%; justify-content: space-between; }
+            .control-bar .model-selector select { font-size: 16px; flex: 1; min-width: 0; }
+            .control-bar .model-selector .model-badge-small { display: none; } /* redundant zum Panel-Badge, spart Platz */
+
+            .instrument-panel {
+                border-left: none;
+                border-top: 1px solid var(--panel-line);
+                max-height: 38vh;
+                max-height: calc(var(--vh, 1vh) * 38);
+                padding: 14px 16px 24px;
+            }
+            .panel-section { padding: 12px 0; }
+
+            .hint-bar { padding: 0 14px 6px; }
+        }
+
+        @media (max-width: 420px) {
+            .app-header h1 { font-size: 0.92rem; }
+            .app-header p { display: none; } /* Untertitel auf sehr kleinen Screens ausblenden */
+            .instrument-panel { max-height: 34vh; max-height: calc(var(--vh, 1vh) * 34); }
         }
     </style>
 </head>
@@ -515,6 +582,19 @@
 
 <script>
 (function() {
+
+    // ================================================================
+    // 0) MOBILE VIEWPORT-HÖHE (fix gegen springende Adressleisten in iOS/Android)
+    // ================================================================
+    function setVhVar() {
+        document.documentElement.style.setProperty('--vh', (window.innerHeight * 0.01) + 'px');
+    }
+    setVhVar();
+    window.addEventListener('resize', setVhVar);
+    window.addEventListener('orientationchange', setVhVar);
+    if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', setVhVar);
+    }
 
     // ================================================================
     // 1) MODELLKONFIGURATIONEN (Energie pro Länge + Faktoren für CO₂ und Wasser)
@@ -917,6 +997,10 @@
     });
     textarea.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); form.requestSubmit(); }
+    });
+    // Auf mobilen Geräten den Chat nach oben scrollen, wenn die Tastatur das Eingabefeld fokussiert
+    textarea.addEventListener('focus', () => {
+        setTimeout(() => { chatWindow.scrollTop = chatWindow.scrollHeight; }, 300);
     });
 
     form.addEventListener('submit', (e) => {
