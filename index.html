@@ -545,7 +545,7 @@
                     <div class="gauge-head"><span class="gauge-label">Energie</span><span class="gauge-value" id="valEnergy">0.000 Wh</span></div>
                     <div class="gauge-track"><div class="gauge-fill energy" id="fillEnergy"></div></div>
                     <div class="gauge-delta" id="deltaEnergy"></div>
-                    <div class="gauge-comparison" id="compareEnergy">⚡ <span class="highlight">0</span> Handy-Ladungen (a 18 Wh)</div>
+                    <div class="gauge-comparison" id="compareEnergy">⚡ <span class="highlight">0</span> Google-Anfragen (a 0.3 Wh)</div>
                 </div>
                 <div class="gauge">
                     <div class="gauge-head"><span class="gauge-label">CO₂</span><span class="gauge-value" id="valCo2">0.000 g</span></div>
@@ -976,7 +976,7 @@
     // ================================================================
     function updateComparisons(name, value) {
         if (name === 'Energy') {
-            const handyLadungen = value / 18; // 15 Wh pro Ladung
+            const handyLadungen = value / 0.3; // 0.3 Wh pro Googlesuche
             document.querySelector('#compareEnergy .highlight').textContent = formatNumber(handyLadungen, 1);
         } else if (name === 'Co2') {
             const kmAutofahrt = value / 150 * 1000; // 150 g CO₂ pro km
